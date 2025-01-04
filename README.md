@@ -123,7 +123,8 @@ Cоздадим задачу настройки тайм-зоны:
       state: present
       update_cache: true
 ````	
-	Добавляем клиентов на ipa-сервер :
+Добавляем клиентов на ipa-сервер:
+
 ````
 - name: add host to ipa-server
     shell: echo -e "yes\nyes" | ipa-client-install --mkhomedir --domain=OTUS.LAN --server=ipa.otus.lan --no-ntp -p admin -w 12080612
@@ -134,7 +135,8 @@ Cоздадим задачу настройки тайм-зоны:
 
 ![Image 1](screenshots/pic1.png)
 
-	Наблюдаем подключенные узлы:
+Наблюдаем подключенные узлы:
+
 ![Image 2](screenshots/pic2.png)
 
 Работа завершена.
