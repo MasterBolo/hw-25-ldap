@@ -62,14 +62,14 @@ Cоздадим задачу настройки тайм-зоны:
         state: stopped
         enabled: false
 
-    - name: disable SElinux
+- name: disable SElinux
       selinux:
         state: disabled
 
-    - name: disable SElinux now
+- name: disable SElinux now
       shell: setenforce 0
 
-    - name: SElinux | Set SElinux config file from template
+- name: SElinux | Set SElinux config file from template
       template:
         src: files/ipa/config
         dest: /etc/selinux/config
