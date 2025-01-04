@@ -1,0 +1,68 @@
+- name: ipa-server | set ipa-server
+  hosts: ipa.otus.lan
+  become: true
+  
+  tasks:
+    - name: install softs on alma
+      yum:
+        name:
+          - chrony
+          - freeipa-server
+          - python3-pip
+        state: present
+        update_cache: true
+
+    - name: enable chrony
+      service:
+        name: chronyd
+        state: restarted
+        enabled: true
+
+    - name: set timezone to Asia/Yekaterinburg
+      timezone:
+        name: Asia/Yekaterinburg
+
+    - name: disable firewalld
+      service:
+        name: firewalld
+        state: stopped
+        enabled: false
+
+    - name: disable SElinux
+      selinux:
+        state: disabled
+
+    - name: disable SElinux now
+      shell: setenforce 0
+
+    - name: SElinux | Set SElinux config file from template
+      template:
+        src: files/ipa/config
+        dest: /etc/selinux/config
+
+    - name: dns | configure dns
+      template:
+        src: files/ipa/hosts
+        dest: /etc/hosts
+
+    - name: Install pexpect
+      pip:
+         name: pexpect
+      become: true 
+      
+    - name: initialize script for ipa
+      expect:
+        command: ipa-server-install
+        responses:
+          '(.*)Do you want to configure integrated DNS(.*)': 'no'
+          '(.*)Server host name(.*)': 'ipa.otus.lan'
+          '(.*)Please confirm the domain name(.*)': 'otus.lan'
+          '(.*)Please provide a realm name(.*)': 'OTUS.LAN'
+          '(.*)Directory Manager password(.*)': '12080612'
+          '(.*)Password \(confirm\)(.*)': '12080612'
+          '(.*)IPA admin password(.*)': '12080612'
+          '(.*)Password(.*)': '12080612'
+          '(.*)NetBIOS domain name \[OTUS\](.*):': 'OTUS'
+          '(.*)Do you want to configure chrony with NTP server or pool address\? \[no\](.*):': 'no'
+          '(.*)Continue to configure the system with these values(.*):': 'yes'
+        timeout: 2400
